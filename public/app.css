@@ -414,6 +414,7 @@ h1 {
 .add-btn { padding: 0; width: 50px; display: grid; place-items: center; flex: none; }
 
 .toast {
+  line-height: 1.35;
   position: fixed;
   left: 50%;
   bottom: 100px;

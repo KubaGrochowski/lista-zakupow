@@ -14,6 +14,13 @@
     not_admin: 'To konto nie jest administratorem.',
   };
 
+  // błąd z bazy → zrozumiały komunikat (z technicznym szczegółem na końcu, żeby dało się go zgłosić)
+  function dbError(prefix, error) {
+    if (!error) return prefix;
+    if (error.code === 'PGRST202') return `${prefix} W bazie brakuje funkcji — uruchom supabase/schema.sql w SQL Editor.`;
+    return `${prefix} (${error.message || error.code})`;
+  }
+
   // ---------- logowanie ----------
 
   const login = setupLogin('admin-email');
@@ -135,19 +142,19 @@
     if (btn.dataset.act === 'reset') {
       ask(`Wygenerować nowe hasło dla ${person}? Stare przestanie działać.`, '', 'Tak, nowe hasło', async () => {
         const { data, error } = await db.rpc('reset_member_password', { p_user: btn.dataset.user });
-        if (error || !data || !data.ok) return toast('Nie udało się zmienić hasła.');
+        if (error || !data || !data.ok) return toast(error ? dbError('Nie udało się zmienić hasła.', error) : ERRORS[data && data.error] || 'Nie udało się zmienić hasła.');
         showCreds(person, data);
       });
     } else if (btn.dataset.act === 'remove') {
       ask(`Usunąć konto z rodziny „${familyName}”? Ta osoba nie zaloguje się już na listę.`, `${person}?`, 'Tak, usuń', async () => {
         const { error } = await db.rpc('delete_member', { p_user: btn.dataset.user });
-        if (error) return toast('Nie udało się usunąć konta.');
+        if (error) return toast(dbError('Nie udało się usunąć konta.', error));
         load();
       });
     } else if (btn.dataset.act === 'delete-family') {
       ask('Usunąć rodzinę razem ze wszystkimi kontami i całą jej listą zakupów?', `„${familyName}”`, 'Tak, usuń rodzinę', async () => {
         const { error } = await db.rpc('delete_family', { p_family: familyId });
-        if (error) return toast('Nie udało się usunąć rodziny.');
+        if (error) return toast(dbError('Nie udało się usunąć rodziny.', error));
         load();
       });
     }
@@ -166,7 +173,7 @@
     btn.disabled = true;
     const { data, error } = await db.rpc('create_member', { p_family: familyId, p_name: name, p_color: color });
     btn.disabled = false;
-    if (error || !data || !data.ok) return toast(ERRORS[data && data.error] || 'Nie udało się utworzyć konta.');
+    if (error || !data || !data.ok) return toast(error ? dbError('Nie udało się utworzyć konta.', error) : ERRORS[data && data.error] || 'Nie udało się utworzyć konta.');
     showCreds(name, data);
     load();
   });
@@ -176,7 +183,7 @@
     const name = $('#family-name').value.trim();
     if (!name) return;
     const { error } = await db.rpc('create_family', { p_name: name });
-    if (error) return toast('Nie udało się utworzyć rodziny.');
+    if (error) return toast(dbError('Nie udało się utworzyć rodziny.', error));
     $('#family-name').value = '';
     load();
   };
