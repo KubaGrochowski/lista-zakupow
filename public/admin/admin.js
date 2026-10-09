@@ -93,6 +93,7 @@
               <span class="who" style="${colorVars(x.color)}">${esc((x.name[0] || '?').toUpperCase())}</span>
               <span class="person-name">${esc(x.name)}<small class="person-login">${esc(x.login || '—')}</small></span>
               <span class="person-actions">
+                <button class="link" type="button" data-act="show" data-user="${x.user_id}" data-person="${esc(x.name)}" data-login="${esc(x.login || '')}">Dane logowania</button>
                 <button class="link" type="button" data-act="reset" data-user="${x.user_id}" data-person="${esc(x.name)}">Nowe hasło</button>
                 <button class="link" type="button" data-act="remove" data-user="${x.user_id}" data-person="${esc(x.name)}">Usuń</button>
               </span>
@@ -129,6 +130,14 @@
     $('#creds').showModal();
   }
 
+  // ponowne podejrzenie zapisanych danych logowania
+  async function showSaved(userId, person, login) {
+    const { data, error } = await db.from('member_passwords').select('password').eq('user_id', userId).maybeSingle();
+    if (error) return toast(dbError('Nie udało się wczytać hasła.', error));
+    if (!data) return toast(`Hasło do konta ${person} nie zostało zapisane (konto sprzed tej zmiany). Kliknij „Nowe hasło”.`);
+    showCreds(person, { login, password: data.password });
+  }
+
   // ---------- akcje ----------
 
   $('#families').addEventListener('click', e => {
@@ -139,7 +148,9 @@
     const familyName = card.dataset.name;
     const person = btn.dataset.person;
 
-    if (btn.dataset.act === 'reset') {
+    if (btn.dataset.act === 'show') {
+      showSaved(btn.dataset.user, person, btn.dataset.login);
+    } else if (btn.dataset.act === 'reset') {
       ask(`Wygenerować nowe hasło dla ${person}? Stare przestanie działać.`, '', 'Tak, nowe hasło', async () => {
         const { data, error } = await db.rpc('reset_member_password', { p_user: btn.dataset.user });
         if (error || !data || !data.ok) return toast(error ? dbError('Nie udało się zmienić hasła.', error) : ERRORS[data && data.error] || 'Nie udało się zmienić hasła.');

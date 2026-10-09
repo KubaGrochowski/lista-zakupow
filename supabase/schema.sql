@@ -50,6 +50,13 @@ alter table public.members drop column if exists status;
 create unique index if not exists members_family_color on public.members (family_id, color);
 create unique index if not exists members_login on public.members (login);
 
+-- Hasła w czytelnej postaci, żeby administrator mógł ponownie podejrzeć dane logowania.
+-- Czyta je tylko administrator (RLS niżej). Logowanie i tak sprawdza zaszyfrowaną kopię w auth.users.
+create table if not exists public.member_passwords (
+  user_id  uuid primary key references public.members (user_id) on delete cascade,
+  password text not null
+);
+
 -- ---------- funkcje pomocnicze ----------
 
 create or replace function public.is_admin() returns boolean
@@ -177,6 +184,7 @@ begin
           'email', now(), now(), now());
 
   insert into members (user_id, family_id, login, name, color) values (uid, fam.id, lg, n, c);
+  insert into member_passwords (user_id, password) values (uid, pw);
   return jsonb_build_object('ok', true, 'login', lg, 'password', pw);
 end $$;
 
@@ -191,6 +199,8 @@ begin
   select login into lg from members where user_id = p_user;
   if not found then return jsonb_build_object('ok', false, 'error', 'no_member'); end if;
   update auth.users set encrypted_password = crypt(pw, gen_salt('bf')), updated_at = now() where id = p_user;
+  insert into member_passwords (user_id, password) values (p_user, pw)
+    on conflict (user_id) do update set password = excluded.password;
   return jsonb_build_object('ok', true, 'login', lg, 'password', pw);
 end $$;
 
@@ -232,6 +242,11 @@ alter table public.app_admins enable row level security;
 alter table public.families   enable row level security;
 alter table public.members    enable row level security;
 alter table public.items      enable row level security;
+alter table public.member_passwords enable row level security;
+
+drop policy if exists "member_passwords: tylko admin" on public.member_passwords;
+create policy "member_passwords: tylko admin" on public.member_passwords
+  for select to authenticated using (is_admin());
 
 drop policy if exists "admins: własny wiersz" on public.app_admins;
 create policy "admins: własny wiersz" on public.app_admins
