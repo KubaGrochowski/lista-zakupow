@@ -19,7 +19,10 @@
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 
-html { -webkit-text-size-adjust: 100%; }
+html {
+  -webkit-text-size-adjust: 100%;
+  touch-action: manipulation;   /* bez przybliżania podwójnym stuknięciem */
+}
 body {
   margin: 0;
   min-height: 100dvh;
