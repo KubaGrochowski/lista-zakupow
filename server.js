@@ -19,7 +19,7 @@ const MIME = {
 
 http.createServer((req, res) => {
   let p = decodeURIComponent(new URL(req.url, 'http://x').pathname);
-  if (p === '/') p = '/index.html';
+  if (p.endsWith('/')) p += 'index.html';   // / oraz /admin/
   const file = path.normalize(path.join(PUBLIC, p));
   if (!file.startsWith(PUBLIC)) { res.writeHead(403); return res.end(); }
   fs.readFile(file, (err, buf) => {

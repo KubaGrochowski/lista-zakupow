@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#2b2622">
+  <meta name="robots" content="noindex">
+  <title>Panel administratora · Lista zakupów</title>
+  <link rel="icon" href="../icon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Permanent+Marker&family=Zilla+Slab:wght@500;700&family=Work+Sans:wght@400;500;600&display=swap&subset=latin-ext" rel="stylesheet">
+  <link rel="stylesheet" href="../app.css">
+</head>
+<body class="admin-page">
+  <div class="cloth" aria-hidden="true"></div>
+
+  <!-- logowanie administratora -->
+  <main id="auth" class="login" hidden>
+    <header class="login-head">
+      <p class="eyebrow">Lista zakupów</p>
+      <h1>Panel administratora</h1>
+    </header>
+    <form id="login-form" class="login-form">
+      <label for="login-user">E-mail</label>
+      <input id="login-user" type="email" autocomplete="username" required>
+      <label for="login-pass">Hasło</label>
+      <input id="login-pass" type="password" autocomplete="current-password" required>
+      <button type="submit" class="btn" id="login-btn">Wejdź</button>
+      <p class="error" id="login-error" role="alert"></p>
+    </form>
+  </main>
+
+  <!-- panel -->
+  <main id="admin" class="app" hidden>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Administrator</p>
+        <h1>Rodziny</h1>
+      </div>
+      <button class="me" type="button" id="logout" title="Wyloguj">Wyloguj</button>
+    </header>
+    <section class="pad admin-pad">
+      <form class="new-family" id="family-form" autocomplete="off">
+        <input id="family-name" maxlength="60" placeholder="Nazwa nowej rodziny, np. Grochowscy" required aria-label="Nazwa rodziny">
+        <button class="btn" type="submit">Utwórz</button>
+      </form>
+      <div id="families"></div>
+      <p class="empty admin-empty" id="families-empty" hidden>Nie ma jeszcze żadnej rodziny.<br><span>Utwórz pierwszą powyżej.</span></p>
+    </section>
+  </main>
+
+  <!-- dane logowania do wysłania (hasło widać tylko teraz) -->
+  <dialog class="confirm creds" id="creds">
+    <form method="dialog">
+      <p class="eyebrow" id="creds-title">Dane do logowania</p>
+      <p class="creds-who" id="creds-who"></p>
+      <dl class="creds-box">
+        <dt>Strona</dt><dd id="creds-url"></dd>
+        <dt>Login</dt><dd id="creds-login"></dd>
+        <dt>Hasło</dt><dd id="creds-pass"></dd>
+      </dl>
+      <p class="creds-note">Hasło widać tylko teraz — skopiuj i wyślij. Jeśli zginie, wygenerujesz nowe.</p>
+      <div class="confirm-actions">
+        <button class="btn-ghost" type="button" id="creds-copy">Skopiuj</button>
+        <button class="btn" value="ok">Gotowe</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="confirm" id="confirm">
+    <form method="dialog">
+      <p class="confirm-q"><span id="confirm-text"></span><br><strong id="confirm-name"></strong></p>
+      <div class="confirm-actions">
+        <button class="btn-ghost" value="cancel">Nie</button>
+        <button class="btn" value="yes" id="confirm-yes">Tak</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+  <script src="../config.js"></script>
+  <script src="../common.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

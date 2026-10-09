@@ -14,105 +14,21 @@
 <body>
   <div class="cloth" aria-hidden="true"></div>
 
-  <!-- logowanie / nowe konto -->
+  <!-- logowanie -->
   <main id="auth" class="login" hidden>
     <header class="login-head">
       <p class="eyebrow">Kuchnia</p>
       <h1>Kto dopisuje?</h1>
     </header>
-
-    <div class="tabs" role="tablist">
-      <button type="button" role="tab" id="tab-register" aria-selected="true">Nowe konto</button>
-      <button type="button" role="tab" id="tab-login" aria-selected="false">Mam konto</button>
-    </div>
-
-    <form id="login-form" class="login-form" hidden>
-      <label for="login-email">E-mail</label>
-      <input id="login-email" type="email" autocomplete="username" required>
+    <form id="login-form" class="login-form">
+      <label for="login-user">Login</label>
+      <input id="login-user" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="np. kuba.grochowscy" required>
       <label for="login-pass">Hasło</label>
       <input id="login-pass" type="password" autocomplete="current-password" required>
       <button type="submit" class="btn" id="login-btn">Wejdź</button>
       <p class="error" id="login-error" role="alert"></p>
+      <p class="form-intro">Login i hasło dostajesz od administratora.</p>
     </form>
-
-    <form id="register-form" class="login-form">
-      <p class="form-intro">Dostałeś(-aś) od administratora klucz dostępu? Wpisz go tutaj. Zanim wejdziesz, administrator musi zaakceptować Twoją prośbę.</p>
-      <label for="reg-code">Klucz dostępu</label>
-      <input id="reg-code" class="code-input" maxlength="7" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="•••••" required>
-      <label for="reg-name">Twoje imię</label>
-      <input id="reg-name" maxlength="30" autocomplete="given-name" required>
-      <span class="label" id="reg-color-label">Twój kolor</span>
-      <div class="swatches" id="reg-colors" role="radiogroup" aria-labelledby="reg-color-label"></div>
-      <label for="reg-email">E-mail</label>
-      <input id="reg-email" type="email" autocomplete="email" required>
-      <label for="reg-pass">Hasło <small>(min. 6 znaków)</small></label>
-      <input id="reg-pass" type="password" autocomplete="new-password" minlength="6" required>
-      <button type="submit" class="btn" id="reg-btn">Poproś o dostęp</button>
-      <p class="error" id="reg-error" role="alert"></p>
-    </form>
-  </main>
-
-  <!-- zalogowany, ale bez rodziny (np. pomylony klucz) -->
-  <main id="join" class="login" hidden>
-    <header class="login-head">
-      <p class="eyebrow">Jeszcze chwila</p>
-      <h1>Dołącz do rodziny</h1>
-    </header>
-    <form id="join-form" class="login-form">
-      <label for="join-code">Klucz dostępu</label>
-      <input id="join-code" class="code-input" maxlength="7" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="•••••" required>
-      <label for="join-name">Twoje imię</label>
-      <input id="join-name" maxlength="30" autocomplete="given-name" required>
-      <span class="label" id="join-color-label">Twój kolor</span>
-      <div class="swatches" id="join-colors" role="radiogroup" aria-labelledby="join-color-label"></div>
-      <button type="submit" class="btn" id="join-btn">Poproś o dostęp</button>
-      <p class="error" id="join-error" role="alert"></p>
-      <div class="form-links">
-        <button type="button" class="link" id="join-back" hidden>Wróć do panelu</button>
-        <button type="button" class="link" data-logout>Wyloguj</button>
-      </div>
-    </form>
-  </main>
-
-  <!-- prośba wysłana, czekamy na administratora -->
-  <main id="waiting" class="login" hidden>
-    <header class="login-head">
-      <p class="eyebrow">Prośba wysłana</p>
-      <h1>Czekamy na akceptację</h1>
-    </header>
-    <div class="login-form waiting-card">
-      <p class="waiting-who"><span class="who" id="wait-dot"></span> <strong id="wait-name"></strong><span id="wait-family-wrap" hidden>, rodzina <strong id="wait-family"></strong></span>.</p>
-      <p>Administrator musi zaakceptować Twoją prośbę. Ta strona sama się odświeży, gdy to zrobi — nic nie musisz klikać.</p>
-      <div class="form-links">
-        <button type="button" class="link" id="wait-cancel">Anuluj prośbę</button>
-        <button type="button" class="link" data-logout>Wyloguj</button>
-      </div>
-    </div>
-  </main>
-
-  <!-- panel administratora -->
-  <main id="admin" class="app" hidden>
-    <header class="topbar">
-      <div>
-        <p class="eyebrow">Administrator</p>
-        <h1>Rodziny</h1>
-      </div>
-      <div class="top-actions">
-        <button class="me" id="admin-to-list" type="button" hidden>Do listy</button>
-        <button class="me" type="button" data-logout title="Wyloguj">Wyloguj</button>
-      </div>
-    </header>
-    <section class="pad admin-pad">
-      <form class="new-family" id="family-form" autocomplete="off">
-        <input id="family-name" maxlength="60" placeholder="Nazwa nowej rodziny, np. Grochowscy" required aria-label="Nazwa rodziny">
-        <button class="btn" type="submit">Utwórz</button>
-      </form>
-      <div id="families"></div>
-      <p class="empty admin-empty" id="families-empty" hidden>Nie ma jeszcze żadnej rodziny.<br><span>Utwórz pierwszą powyżej.</span></p>
-      <div class="admin-foot" id="admin-foot" hidden>
-        <button type="button" class="link" id="admin-join">Chcę sam(a) korzystać z listy jednej z rodzin</button>
-      </div>
-    </section>
   </main>
 
   <!-- lista -->
@@ -122,13 +38,10 @@
         <p class="eyebrow" id="family-label">Lista zakupów</p>
         <h1 id="title">Do kupienia</h1>
       </div>
-      <div class="top-actions">
-        <button class="me" id="to-admin" type="button" hidden>Panel</button>
-        <button class="me" id="me" type="button" title="Wyloguj">
-          <span class="me-dot" id="me-dot"></span>
-          <span id="me-name"></span>
-        </button>
-      </div>
+      <button class="me" id="me" type="button" title="Wyloguj">
+        <span class="me-dot" id="me-dot"></span>
+        <span id="me-name"></span>
+      </button>
     </header>
 
     <section class="pad" aria-live="polite">
@@ -169,6 +82,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
   <script src="config.js"></script>
+  <script src="common.js"></script>
   <script src="categories.js"></script>
   <script src="app.js"></script>
 </body>
