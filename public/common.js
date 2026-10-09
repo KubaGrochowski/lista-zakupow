@@ -88,6 +88,11 @@ window.Common = (() => {
   }
   document.addEventListener('touchmove', e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
 
+  // service worker wspólny dla listy i panelu (leży w głównym folderze strony)
+  if ('serviceWorker' in navigator && location.protocol === 'https:') {
+    navigator.serviceWorker.register(isAdminPage ? '../sw.js' : 'sw.js').catch(() => {});
+  }
+
   let toastTimer;
   function toast(text) {
     const t = $('#toast');
