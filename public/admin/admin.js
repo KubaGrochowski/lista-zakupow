@@ -82,8 +82,8 @@
         <article class="family" data-family="${f.id}" data-name="${esc(f.name)}">
           <header class="family-head">
             <h2>${esc(f.name)}</h2>
-            <button class="icon-btn" type="button" data-act="delete-family" aria-label="Usuń rodzinę ${esc(f.name)}" title="Usuń rodzinę">
-              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <button class="icon-btn trash-btn" type="button" data-act="delete-family" aria-label="Usuń rodzinę ${esc(f.name)}" title="Usuń rodzinę">
+              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>
             </button>
           </header>
 
@@ -152,7 +152,7 @@
         load();
       });
     } else if (btn.dataset.act === 'delete-family') {
-      ask('Usunąć rodzinę razem ze wszystkimi kontami i całą jej listą zakupów?', `„${familyName}”`, 'Tak, usuń rodzinę', async () => {
+      ask('Czy na pewno chcesz usunąć rodzinę', `„${familyName}”? Znikną też wszystkie jej konta i lista zakupów.`, 'Tak, usuń', async () => {
         const { error } = await db.rpc('delete_family', { p_family: familyId });
         if (error) return toast(dbError('Nie udało się usunąć rodziny.', error));
         load();

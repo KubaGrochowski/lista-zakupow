@@ -330,6 +330,7 @@ h1 {
   cursor: pointer;
 }
 .icon-btn:hover { color: var(--tomato); background: rgba(184,68,47,.08); }
+.family .trash-btn { opacity: 1; color: var(--ink-soft); }
 
 /* skreślone */
 .row.done .name, .row.done .qty { color: var(--ink-faint); }

@@ -88,7 +88,8 @@ window.Common = (() => {
     t.innerHTML = `<span>${esc(text)}</span>`;
     t.classList.add('show');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.classList.remove('show'), 4000);
+    // dłuższe komunikaty (np. błędy z bazy) zostają dłużej, żeby dało się je przeczytać
+    toastTimer = setTimeout(() => t.classList.remove('show'), text.length > 60 ? 12000 : 4000);
   }
 
   return { $, db, toEmail, read, write, esc, colorVars, PALETTE, setupLogin, ask, toast };
