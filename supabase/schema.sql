@@ -139,7 +139,7 @@ declare
   k     int := 1;
   uid   uuid := gen_random_uuid();
   pw    text := public.random_password();
-  email text;
+  v_email text;   -- nie "email": tak nazywa się kolumna w auth.users
 begin
   if not is_admin() then return jsonb_build_object('ok', false, 'error', 'not_admin'); end if;
   select * into fam from families where id = p_family;
@@ -154,18 +154,18 @@ begin
   if base is null then base := 'osoba'; end if;
   base := base || '.' || coalesce(nullif(slugify(fam.name), ''), 'rodzina');
   lg := base;
-  while exists (select 1 from auth.users where email = lg || '@lista.local') loop
+  while exists (select 1 from auth.users u where u.email = lg || '@lista.local') loop
     k := k + 1;
     lg := base || k;
   end loop;
-  email := lg || '@lista.local';
+  v_email := lg || '@lista.local';
 
   insert into auth.users (
     instance_id, id, aud, role, email, encrypted_password, email_confirmed_at,
     raw_app_meta_data, raw_user_meta_data, created_at, updated_at,
     confirmation_token, email_change, email_change_token_new, recovery_token
   ) values (
-    '00000000-0000-0000-0000-000000000000', uid, 'authenticated', 'authenticated', email,
+    '00000000-0000-0000-0000-000000000000', uid, 'authenticated', 'authenticated', v_email,
     crypt(pw, gen_salt('bf')), now(),
     '{"provider":"email","providers":["email"]}', jsonb_build_object('name', n), now(), now(),
     '', '', '', ''
@@ -173,7 +173,7 @@ begin
 
   insert into auth.identities (id, user_id, provider_id, identity_data, provider, last_sign_in_at, created_at, updated_at)
   values (gen_random_uuid(), uid, uid::text,
-          jsonb_build_object('sub', uid::text, 'email', email, 'email_verified', true),
+          jsonb_build_object('sub', uid::text, 'email', v_email, 'email_verified', true),
           'email', now(), now(), now());
 
   insert into members (user_id, family_id, login, name, color) values (uid, fam.id, lg, n, c);
