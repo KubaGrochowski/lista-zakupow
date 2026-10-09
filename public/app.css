@@ -21,7 +21,8 @@
 
 html {
   -webkit-text-size-adjust: 100%;
-  touch-action: manipulation;   /* bez przybliżania podwójnym stuknięciem */
+  /* tylko przewijanie: bez przybliżania dwoma palcami i podwójnym stuknięciem (działa też w Safari na iPhonie) */
+  touch-action: pan-x pan-y;
 }
 body {
   margin: 0;
